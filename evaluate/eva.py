@@ -75,9 +75,6 @@ if __name__ == "__main__":
     parser.add_argument('--max_tokens', type=int, default=4096, help='Maximum number of tokens for the response')
     parser.add_argument('--input_file', type=str, default="test.json", help='Path to the input JSON file')
     parser.add_argument('--output_dir', type=str, default="results", help='Directory to save the output JSON files')
-    parser.add_argument("--prompt_format", type=str, default="""<|begin_of_text|><|start_header_id|>system<|end_header_id><|eot_id|>
-{}
-<|start_header_id|>user<|end_header_id|>{}<|eot_id|><|start_header_id|>assistant<|end_header_id|>{}""", help="prompt format")
     parser.add_argument("--system_prompt", type=str, default="Extract terms from the following data and format it in JSON using IOB notation.", help="system prompt")
     parser.add_argument("--model_type", type=str, default="llama3", help="Model type")
     args = parser.parse_args()
