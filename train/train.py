@@ -120,6 +120,27 @@ def evaluate_model(model, tokenizer):
             print("Error in writing to file")
             print(da)
 
+def get_prompt_format(model_name):
+    if model_name == "phi3":
+        return r"""<s><|system|>{}<|end|>
+    <|user|>{}<|end|>
+    <|assistant|>{}"""
+    elif model_name == "llama3":
+        return r"""<|begin_of_text|><|start_header_id|>system<|end_header_id><|eot_id|>
+{}
+<|start_header_id|>user<|end_header_id|>{}<|eot_id|><|start_header_id|>assistant<|end_header_id|>{}"""
+    elif model_name == "gemma":
+        return r"""<start_of_turn>user
+    {}"{}" <end_of_turn>
+    <start_of_turn>model
+    {}"""
+    elif model_name == "qwen2":
+        return r"""<|im_start|>system
+    {}<|im_end|>
+    <|im_start|>user
+    {}<|im_end|>
+    <|im_start|>assistant<|eot_id|>
+    {}"""
 # Main function
 def main():
     parser = argparse.ArgumentParser(description="Train and save model")
@@ -134,9 +155,9 @@ def main():
     parser.add_argument("--lora_alpha", type=int, default=16, help="lora alpha parameter")
     parser.add_argument("--lora_dropout", type=float, default=0, help="lora dropout parameter")
     parser.add_argument("--bias", type=str, default="none", help="bias parameter")
-    parser.add_argument("--prompt_format", type=str, default="""<s><|system|>{}<|end|>
-<|user|>{}<|end|>
-<|assistant|>{}<|end|>""", help="alpaca prompt")
+#     parser.add_argument("--prompt_format", type=str, default="""<s><|system|>{}<|end|>
+# <|user|>{}<|end|>
+# <|assistant|>{}<|end|>""", help="alpaca prompt")
     parser.add_argument("--system_prompt", type=str, default="""Character: As a Text Data Analyst, you're tasked with extracting key elements from text to a JSON in IOB format.
 Skills:
 Name Extraction: Accurately identify and format names in IOB style.
@@ -160,9 +181,9 @@ Constraints: Focus mainly on extracting names and keywords. Include all words fr
     parser.add_argument("--save_16bit", type=bool, default=False, help="Save 16bit")
     parser.add_argument("--push_lora", type=bool, default=False, help="Push LoRA")
     parser.add_argument("--push_gguf", type=bool, default=False, help="Push GGUF")
-    
+    parser.add_argument("--model_type",type=str,default="llama3")
     args = parser.parse_args()
-
+    prompt_format = get_prompt_format(args.model_type)
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=args.model_name,
         max_seq_length=args.max_seq_length,
@@ -179,7 +200,7 @@ Constraints: Focus mainly on extracting names and keywords. Include all words fr
         use_gradient_checkpointing="unsloth", 
         random_state=args.seed,
     )
-    dataset = load_and_format_dataset("weiiv/terms_new", "train", args.prompt_format, args.system_prompt,tokenizer)
+    dataset = load_and_format_dataset("weiiv/terms_new", "train", prompt_format, args.system_prompt,tokenizer)
     print_first_sample(dataset)
     training_args = get_training_args(args.batch_size, args.num_epochs, args.learning_rate, args.gradient_accumulation_steps, args.warmup_steps, args.logging_steps, args.optim, args.weight_decay, args.lr_scheduler_type, args.seed, args.output_dir)
     trainer = initialize_trainer(model, tokenizer, dataset, training_args, args.max_seq_length)
