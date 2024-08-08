@@ -5,7 +5,7 @@ aliases:
 ---
 
 ### Environment Setup
-```
+<!-- ```
 pip install openai
 curl -fsSL https://ollama.com/install.sh | sh && ollama serve
 ```
@@ -40,6 +40,6 @@ Then run the current model:
 `ollama run llama3term`
 
 Download the test dataset:
-`curl -o test.json https://huggingface.co/datasets/weiiv/terms_new/raw/main/test.json`
+`curl -o test.json https://huggingface.co/datasets/weiiv/terms_new/raw/main/test.json` -->
 
 Modify the parameters in `run_evaluate.sh`, create a folder for output results, add execution permissions with `chmod +x run_evaluate.sh`, and then run it.
