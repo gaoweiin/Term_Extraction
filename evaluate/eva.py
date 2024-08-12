@@ -75,7 +75,12 @@ if __name__ == "__main__":
     parser.add_argument('--max_tokens', type=int, default=4096, help='Maximum number of tokens for the response')
     parser.add_argument('--input_file', type=str, default="test.json", help='Path to the input JSON file')
     parser.add_argument('--output_dir', type=str, default="results", help='Directory to save the output JSON files')
-    parser.add_argument("--system_prompt", type=str, default="Extract terms from the following data and format it in JSON using IOB notation.", help="system prompt")
+    parser.add_argument("--system_prompt", type=str, default="""Character: As a Text Data Analyst specializing in heart failure, you're tasked with extracting key elements from medical texts to a JSON in IOB format.
+Skills:
+1. Name Extraction: Accurately identify and format names in IOB style.
+2. Heart failure Term Extraction: Extract essential heart failure-related terms in IOB format.
+3. Structure Maintenance: Keep the JSON output structure intact and use placeholders for any missing data.
+Constraints: Focus mainly on extracting names and heart failure-related terms. Include all words from the sentence in the output JSON, even if some data is missing. Base your assumptions only on the provided text.""", help="system prompt")
     parser.add_argument("--model_type", type=str, default="llama3", help="Model type")
     args = parser.parse_args()
     prompt_format = get_prompt_format(args.model_type)
